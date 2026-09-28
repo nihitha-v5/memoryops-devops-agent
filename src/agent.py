@@ -124,11 +124,7 @@ Deployment logs:
 {logs}
 """.strip()
 
-    # First remember the current deployment event.
-    retain_memory(
-        hindsight,
-        current_event,
-    )
+ 
 
     # Ask Hindsight for similar historical experiences.
     memories = recall_memories(
@@ -151,7 +147,12 @@ Deployment logs:
 
     if not history:
         history = "No relevant previous memories were found."
-
+    # Store the current deployment after historical memory retrieval.
+    # This prevents the current event from influencing its own recall.
+    retain_memory(
+        hindsight,
+        current_event,
+    )
     prompt = f"""
 You are MemoryOps, a DevOps deployment risk analysis agent.
 
