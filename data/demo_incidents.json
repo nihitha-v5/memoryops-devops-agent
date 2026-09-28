@@ -1,0 +1,30 @@
+[
+  {
+    "project": "payments-api",
+    "environment": "production",
+    "type": "failure",
+    "summary": "Database migration caused a production outage because a field was removed before all application instances were updated.",
+    "lesson": "Use backward-compatible database migrations and deploy schema changes before application changes."
+  },
+  {
+    "project": "orders-service",
+    "environment": "production",
+    "type": "failure",
+    "summary": "Order processing failed because a required environment variable was missing during a payment configuration deployment.",
+    "lesson": "Verify all required production environment variables before deployment."
+  },
+  {
+    "project": "catalog-service",
+    "environment": "staging",
+    "type": "failure",
+    "summary": "CI tests became flaky because test runs shared a database without proper cleanup.",
+    "lesson": "Use isolated test environments and clean database state between test runs."
+  },
+  {
+    "project": "inventory-api",
+    "environment": "production",
+    "type": "success",
+    "summary": "A dependency upgrade was successfully deployed using automated tests, canary deployment, monitoring, and a rollback plan.",
+    "lesson": "Use staged deployment, monitoring, automated tests, and rollback preparation for dependency upgrades."
+  }
+]
