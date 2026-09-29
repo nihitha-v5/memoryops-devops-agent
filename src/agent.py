@@ -77,7 +77,7 @@ def retain_memory(client: Hindsight, content: str) -> None:
 
 
 def recall_memories(client: Hindsight, query: str) -> list[str]:
-    """Recall relevant previous DevOps experiences without duplicates."""
+    """Recall relevant previous DevOps experiences and remove duplicates."""
 
     result = client.recall(
         bank_id=HINDSIGHT_BANK_ID,
@@ -94,15 +94,43 @@ def recall_memories(client: Hindsight, query: str) -> list[str]:
         if not text:
             continue
 
-        text = text.strip()
+        text = " ".join(text.split())
+        normalized = text.lower()
 
-        if text in seen:
+        # Remove exact duplicates.
+        if normalized in seen:
             continue
 
-        seen.add(text)
+        # Remove memories that are extremely similar
+        # to one we have already kept.
+        is_similar = False
+
+        current_words = set(normalized.split())
+
+        for existing in memories:
+            existing_words = set(existing.lower().split())
+
+            if not existing_words or not current_words:
+                continue
+
+            overlap = len(
+                existing_words & current_words
+            ) / min(
+                len(existing_words),
+                len(current_words),
+            )
+
+            if overlap >= 0.75:
+                is_similar = True
+                break
+
+        if is_similar:
+            continue
+
+        seen.add(normalized)
         memories.append(text)
 
-    return memories[:8]
+    return memories[:5]
 
 
 def analyze_deployment(
