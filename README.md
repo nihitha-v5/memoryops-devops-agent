@@ -49,7 +49,7 @@ The agent also stores its analysis so that future deployment decisions can build
 
 ## How It Works
 
-```text
+
 Deployment Information
         |
         v
@@ -100,53 +100,33 @@ Future Deployment Memory
 5. Analyze the deployment using the Groq LLM
 6. Store the agent's decision for future learning
 7. Return the deployment risk analysis
+---
+## Technology Stack
 
-Structured Risk Assessment
+| Layer                | Technology               |
+| -------------------- | ------------------------ |
+| Programming Language | Python                   |
+| API Framework        | FastAPI                  |
+| LLM Interface        | OpenAI-compatible client |
+| LLM Provider         | Groq                     |
+| Memory Layer         | Hindsight                |
+| Configuration        | python-dotenv            |
+| Data Validation      | Pydantic                 |
+| Testing              | Pytest                   |
+| CI/CD                | GitHub Actions           |
+| Frontend             | HTML, CSS, JavaScript    |
+| Version Control      | Git / GitHub             |
+---
+## Team
 
-The LLM returns a structured JSON response containing:
-{
-  "risk": "LOW | MEDIUM | HIGH",
-  "summary": "short explanation",
-  "recommended_action": "what the developer should do",
-  "checks": [
-    "check 1",
-    "check 2",
-    "check 3"
-  ],
-  "reasoning": "how historical memory influenced the recommendation"
-}
-# Technology Stack
+### MemoryOps Team
 
-| Layer | Technology |
-|---|---|
-| Programming Language | Python |
-| API Framework | FastAPI |
-| LLM Interface | OpenAI-compatible client |
-| LLM Provider | Groq |
-| Memory Layer | Hindsight |
-| Configuration | python-dotenv |
-| Data Validation | Pydantic |
-| Testing | Pytest |
-| CI/CD | GitHub Actions |
-| Frontend | HTML, CSS, JavaScript |
-| Version Control | Git / GitHub |
-
-
-# Team
-
-## MemoryOps Team
-
-| Team Member         | Role                                        | Responsibilities                                                                                                 |
-| ------------------- | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| **[Member 1 Name]** | **Team Lead & System Architect**            | Overall project coordination, system architecture, technical decisions, integration, and final project direction |
-| **[Member 2 Name]** | **Backend Developer**                       | FastAPI development, API endpoints, request handling, and integration of backend components                      |
-| **[Member 3 Name]** | **AI/LLM Engineer**                         | Groq LLM integration, prompt design, structured risk analysis, and agent reasoning                               |
-| **[Member 4 Name]** | **Memory & Data Engineer**                  | Hindsight integration, memory retention, memory recall, historical context retrieval, and demo incident data     |
-| **[Member 5 Name]** | **Frontend & UI Developer**                 | Web interface, deployment analysis form, result display, and frontend-backend integration                        |
-| **[Member 6 Name]** | **Testing, CI/CD & Documentation Engineer** | Automated testing, GitHub Actions CI, project documentation, architecture documentation, and testing validation  |
-
-### Team Contribution
-
-The team collaboratively worked on the design, development, integration, testing, documentation, and presentation of **MemoryOps — DevOps Pipeline Risk Agent**.
-
-Each role focuses on a different part of the system while contributing to the overall development and validation of the project.
+| Team Member | Role                                    | Responsibilities                                                                                                |
+| ----------- | --------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Member 1    | Team Lead & System Architect            | Overall project coordination, system architecture, technical decisions, integration, and project direction      |
+| Member 2    | Backend Developer                       | FastAPI development, API endpoints, request handling, and backend integration                                   |
+| Member 3    | AI/LLM Engineer                         | Groq LLM integration, prompt design, structured risk analysis, and agent reasoning                              |
+| Member 4    | Memory & Data Engineer                  | Hindsight integration, memory retention, memory recall, historical context retrieval, and demo incident data    |
+| Member 5    | Frontend & UI Developer                 | Web interface, deployment analysis form, result display, and frontend-backend integration                       |
+| Member 6    | Testing, CI/CD & Documentation Engineer | Automated testing, GitHub Actions CI, project documentation, architecture documentation, and testing validation |
+---
