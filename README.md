@@ -88,3 +88,15 @@ Store Agent Analysis
         |
         v
 Future Deployment Memory
+
+---
+
+## Core Workflow
+
+1. Receive deployment information
+2. Retrieve relevant historical memories from Hindsight
+3. Store the current deployment context
+4. Build the analysis context using current deployment data and historical memory
+5. Analyze the deployment using the Groq LLM
+6. Store the agent's decision for future learning
+7. Return the deployment risk analysis
