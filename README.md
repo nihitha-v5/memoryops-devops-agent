@@ -123,10 +123,10 @@ Future Deployment Memory
 
 | Team Member | Role                                    | Responsibilities                                                                                                |
 | ----------- | --------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| Member 1    | Team Lead & System Architect            | Overall project coordination, system architecture, technical decisions, integration, and project direction      |
-| Member 2    | Backend Developer                       | FastAPI development, API endpoints, request handling, and backend integration                                   |
-| Member 3    | AI/LLM Engineer                         | Groq LLM integration, prompt design, structured risk analysis, and agent reasoning                              |
-| Member 4    | Memory & Data Engineer                  | Hindsight integration, memory retention, memory recall, historical context retrieval, and demo incident data    |
-| Member 5    | Frontend & UI Developer                 | Web interface, deployment analysis form, result display, and frontend-backend integration                       |
-| Member 6    | Testing, CI/CD & Documentation Engineer | Automated testing, GitHub Actions CI, project documentation, architecture documentation, and testing validation |
+| G.VEDASREE | Team Lead & System Architect            | Overall project coordination, system architecture, technical decisions, integration, and project direction      |
+| V.NIHITHA | Backend Developer                       | FastAPI development, API endpoints, request handling, and backend integration                                   |
+| M.TRISHNA | AI/LLM Engineer                         | Groq LLM integration, prompt design, structured risk analysis, and agent reasoning                              |
+| M.PRANATHI | Memory & Data Engineer                  | Hindsight integration, memory retention, memory recall, historical context retrieval, and demo incident data    |
+| CH.NIKHITHA | Frontend & UI Developer                 | Web interface, deployment analysis form, result display, and frontend-backend integration                       |
+| RAMAVATH PRIYA | Testing, CI/CD & Documentation Engineer | Automated testing, GitHub Actions CI, project documentation, architecture documentation, and testing validation |
 ---
