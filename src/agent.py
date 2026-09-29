@@ -16,12 +16,14 @@ HINDSIGHT_BASE_URL = os.getenv(
 )
 
 HINDSIGHT_API_KEY = os.getenv("HINDSIGHT_API_KEY")
+
 HINDSIGHT_BANK_ID = os.getenv(
     "HINDSIGHT_BANK_ID",
     "memoryops-devops",
 )
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
 GROQ_MODEL = os.getenv(
     "GROQ_MODEL",
     "openai/gpt-oss-120b",
@@ -30,6 +32,7 @@ GROQ_MODEL = os.getenv(
 
 def get_hindsight() -> Hindsight:
     """Create the Hindsight client."""
+
     if not HINDSIGHT_API_KEY:
         raise RuntimeError(
             "HINDSIGHT_API_KEY is missing. Check your .env file."
@@ -43,6 +46,7 @@ def get_hindsight() -> Hindsight:
 
 def get_llm() -> OpenAI:
     """Create the Groq OpenAI-compatible client."""
+
     if not GROQ_API_KEY:
         raise RuntimeError(
             "GROQ_API_KEY is missing. Check your .env file."
@@ -55,7 +59,8 @@ def get_llm() -> OpenAI:
 
 
 def ensure_bank(client: Hindsight) -> None:
-    """Create/update the Hindsight memory bank."""
+    """Create or update the Hindsight memory bank."""
+
     client.create_bank(
         bank_id=HINDSIGHT_BANK_ID,
         name="MemoryOps DevOps Memory",
@@ -64,6 +69,7 @@ def ensure_bank(client: Hindsight) -> None:
 
 def retain_memory(client: Hindsight, content: str) -> None:
     """Store a deployment experience in Hindsight."""
+
     client.retain(
         bank_id=HINDSIGHT_BANK_ID,
         content=content,
@@ -106,6 +112,10 @@ def analyze_deployment(
     change_summary: str,
     logs: str,
 ) -> dict[str, Any]:
+    """
+    Analyze a deployment using current deployment data
+    and relevant historical memories.
+    """
 
     hindsight = get_hindsight()
     llm = get_llm()
@@ -124,9 +134,8 @@ Deployment logs:
 {logs}
 """.strip()
 
- 
-
-    # Ask Hindsight for similar historical experiences.
+    # Retrieve historical memories BEFORE storing the current event.
+    # This prevents the current deployment from influencing its own recall.
     memories = recall_memories(
         hindsight,
         query=f"""
@@ -147,20 +156,23 @@ Deployment logs:
 
     if not history:
         history = "No relevant previous memories were found."
+
     # Store the current deployment after historical memory retrieval.
-    # This prevents the current event from influencing its own recall.
     retain_memory(
         hindsight,
         current_event,
     )
+
     prompt = f"""
 You are MemoryOps, a DevOps deployment risk analysis agent.
 
 Your job is to analyze a proposed deployment using:
+
 1. The current deployment information.
 2. Relevant historical operational memories retrieved from Hindsight.
 
 CURRENT DEPLOYMENT
+
 Project: {project}
 Environment: {environment}
 Commit: {commit}
@@ -170,7 +182,13 @@ Logs:
 {logs}
 
 HISTORICAL MEMORY
+
 {history}
+
+Use the historical memories only when they are relevant
+to the current deployment.
+
+Do not invent incidents or historical facts.
 
 Return ONLY valid JSON with this structure:
 
@@ -211,6 +229,7 @@ Return ONLY valid JSON with this structure:
 
     try:
         decision = json.loads(raw_result)
+
     except json.JSONDecodeError:
         decision = {
             "risk": "MEDIUM",
@@ -220,8 +239,8 @@ Return ONLY valid JSON with this structure:
             "reasoning": "The model did not return valid JSON.",
         }
 
-    # Remember the agent's decision so future deployments
-    # can learn from this analysis.
+    # Store the agent's decision so future deployments
+    # can learn from previous analyses.
     retain_memory(
         hindsight,
         f"""
@@ -245,107 +264,58 @@ Agent decision:
 
 def seed_demo() -> None:
     """
-    Add realistic demo incidents to Hindsight.
-
-    These examples let us demonstrate the memory feature
-    before connecting a real CI/CD pipeline.
+    Load demo incidents from data/demo_incidents.json
+    and store them in Hindsight.
     """
 
     hindsight = get_hindsight()
 
     ensure_bank(hindsight)
 
-    incidents = [
-        """
-Incident: payments-api deployment failure.
+    # Locate data/demo_incidents.json from the project root.
+    project_root = os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__))
+    )
 
-Environment: production.
+    file_path = os.path.join(
+        project_root,
+        "data",
+        "demo_incidents.json",
+    )
 
-Change: database schema migration.
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(
+            f"Demo incidents file not found: {file_path}"
+        )
 
-Problem:
-The new database migration was incompatible with the previous
-application version. The deployment caused application errors.
-
-Root cause:
-The migration removed a field before all application instances
-had stopped using it.
-
-Fix:
-The team restored the previous application version and changed
-the migration to a backward-compatible approach.
-
-Lesson:
-For database migrations, deploy compatible schema changes first,
-then update the application, and verify rollback before production.
-""",
-
-        """
-Incident: orders-service deployment failure.
-
-Environment: production.
-
-Change: new payment configuration.
-
-Problem:
-The deployment succeeded technically but the service could not
-process orders.
-
-Root cause:
-A required production environment variable was missing.
-
-Fix:
-The variable was added to the deployment configuration.
-
-Lesson:
-Validate required environment variables before production deployment.
-""",
-
-        """
-Incident: catalog-service CI failure.
-
-Environment: staging.
-
-Change: dependency upgrade.
-
-Problem:
-The test suite produced intermittent failures.
-
-Root cause:
-Tests were using a shared database that was not reset correctly.
-
-Fix:
-The test environment was isolated and database cleanup was added.
-
-Lesson:
-Flaky integration tests should be investigated before treating a
-deployment as safe.
-""",
-
-        """
-Incident: inventory-api successful deployment.
-
-Environment: production.
-
-Change: dependency upgrade.
-
-Process:
-The team ran automated tests, deployed to a canary group,
-monitored errors, and kept a rollback plan ready.
-
-Result:
-Deployment completed successfully.
-
-Lesson:
-Canary deployment plus monitoring and rollback preparation
-reduced deployment risk.
-""",
-    ]
+    with open(
+        file_path,
+        "r",
+        encoding="utf-8",
+    ) as file:
+        incidents = json.load(file)
 
     for incident in incidents:
-        retain_memory(hindsight, incident)
+        content = f"""
+Project: {incident["project"]}
+Environment: {incident["environment"]}
+Incident type: {incident["type"]}
 
-    print(f"Added {len(incidents)} demo memories to Hindsight.")
+Summary:
+{incident["summary"]}
+
+Lesson:
+{incident["lesson"]}
+""".strip()
+
+        retain_memory(
+            hindsight,
+            content,
+        )
+
+    print(
+        f"Added {len(incidents)} demo memories to Hindsight."
+    )
 
 
 if __name__ == "__main__":
